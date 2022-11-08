@@ -28,7 +28,7 @@
  * @author     Tyler Karle <tyler.karle@icloud.com>
  */
 
-require_once plugin_dir_path( dirname( __FILE__ ) ) . '../vendor/autoload.php';
+require_once plugin_dir_path( dirname( __FILE__ ) ) . '/vendor/autoload.php';
 
 class Gf_Ics {
 
