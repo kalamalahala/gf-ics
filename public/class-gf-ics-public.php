@@ -131,7 +131,7 @@ class Gf_Ics_Public {
 			if ($agent_number != '42215' || $agent_number != 42215 ) {
 				return $notification;
 			} else {
-				error_log($entry);
+				error_log(print_r($entry, true));
 			}
 		} else {
 			return $notification;
