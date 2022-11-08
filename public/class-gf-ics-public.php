@@ -38,7 +38,8 @@ use Eluceo\iCal\Domain\ValueObject\UniqueIdentifier;
  * @subpackage Gf_Ics/public
  * @author     Tyler Karle <tyler.karle@icloud.com>
  */
-class Gf_Ics_Public {
+class Gf_Ics_Public
+{
 
 	/**
 	 * The ID of this plugin.
@@ -65,11 +66,11 @@ class Gf_Ics_Public {
 	 * @param      string    $plugin_name       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct($plugin_name, $version)
+	{
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
 	}
 
 	/**
@@ -77,7 +78,8 @@ class Gf_Ics_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles()
+	{
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -91,8 +93,7 @@ class Gf_Ics_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/gf-ics-public.css', array(), $this->version, 'all' );
-
+		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/gf-ics-public.css', array(), $this->version, 'all');
 	}
 
 	/**
@@ -100,7 +101,8 @@ class Gf_Ics_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts()
+	{
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -114,11 +116,11 @@ class Gf_Ics_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/gf-ics-public.js', array( 'jquery' ), $this->version, false );
-
+		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/gf-ics-public.js', array('jquery'), $this->version, false);
 	}
 
-	public function ics_notification($notification, $form, $entry) {
+	public function ics_notification($notification, $form, $entry)
+	{
 
 		if ($notification['name'] == 'Send Appointment Details to Client') {
 			// error_log('notification: ' . print_r($notification, true));
@@ -130,24 +132,22 @@ class Gf_Ics_Public {
 
 			$agent_number_field = 12;
 			$agent_number = $entry[$agent_number_field];
-			if ($agent_number != '42215' || $agent_number != 42215 ) {
-				return $notification;
-			} else { // begin ICS construction here
-				$details = self::retrieve_ssa_details($set_appointment); // Appointment details: key start_date, end_date
-				$ics = self::generate_ics($details, $entry); // ICS file
 
-				if ($ics) {
-					$notification['attachments']   = rgar( $notification, 'attachments', array() );
-					$notification['attachments'][] = plugin_dir_path(__FILE__) . 'assets/appointment.ics';
-				}
-				return $notification;
+			$details = self::retrieve_ssa_details($set_appointment); // Appointment details: key start_date, end_date
+			$ics = self::generate_ics($details, $entry); // ICS file
+
+			if ($ics) {
+				$notification['attachments']   = rgar($notification, 'attachments', array());
+				$notification['attachments'][] = plugin_dir_path(__FILE__) . 'assets/appointment.ics';
 			}
+			return $notification;
 		} else {
 			return $notification;
 		}
 	}
 
-	public static function generate_ics($appointment, $entry) {
+	public static function generate_ics($appointment, $entry)
+	{
 		$eventUid = 'thejohnson.group/event/' . $entry['id'];
 		$eventUniqueIdentifier = new UniqueIdentifier($eventUid);
 
@@ -155,10 +155,10 @@ class Gf_Ics_Public {
 		$end_time = new DateTime(DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $appointment['end_date']), true);
 		$day = new TimeSpan($start_time, $end_time);
 		$location = new Location('Zoom Webinar');
-		
-  		// Organizer
+
+		// Organizer
 		$organizer = new Organizer(
-		   new EmailAddress('info@thejohnson.group', 'The Johnson Group')
+			new EmailAddress('info@thejohnson.group', 'The Johnson Group')
 		);
 
 		// Agent
@@ -171,11 +171,11 @@ class Gf_Ics_Public {
 		$agent->setParticipationStatus(ParticipationStatus::ACCEPTED());
 		$agent->setDisplayName($agent_name);
 		$agent->setLanguage('en-US');
-  
+
 		// Attendee
 		$attendee_name = $entry[4.3] . ' ' . $entry[4.6];
 		$attendee = new Attendee(
-		   new EmailAddress($entry[3], $attendee_name)
+			new EmailAddress($entry[3], $attendee_name)
 		);
 		$attendee->setCalendarUserType(CalendarUserType::INDIVIDUAL());
 		$attendee->setParticipationStatus(ParticipationStatus::NEEDS_ACTION());
@@ -184,7 +184,7 @@ class Gf_Ics_Public {
 		$attendee->addSentBy(new EmailAddress($agent_email, $agent_name));
 		$attendee->setDisplayName($attendee_name);
 		$attendee->setLanguage('en-US');
-  
+
 		$appointment_type = array(
 			'pos' => 'Policy Owner Service',
 			'adb' => 'Accidental Death Benefit',
@@ -195,8 +195,8 @@ class Gf_Ics_Public {
 
 		$type = $appointment_type[$entry[33]];
 		$description = $type . ' Appointment with ' . $attendee_name . ' and ' . $agent_name;
-  
-  
+
+
 		$event = new Event($eventUniqueIdentifier);
 		$event->setOccurrence($day);
 		$event->setSummary('Appointment - The Johnson Group');
@@ -205,20 +205,21 @@ class Gf_Ics_Public {
 		$event->addAttendee($attendee);
 		$event->addAttendee($agent);
 		$event->setLocation($location);
-  
+
 		$calendar = new Eluceo\iCal\Domain\Entity\Calendar([$event]);
-  
+
 		// 3. Transform domain entity into an iCalendar component
 		$componentFactory = new Eluceo\iCal\Presentation\Factory\CalendarFactory();
 		$calendarComponent = $componentFactory->createCalendar($calendar);
-  
+
 		// 4. Store file
 		$file = file_put_contents(plugin_dir_path(__FILE__) . 'assets/appointment.ics', (string)$calendarComponent);
-  
-		return $file;
-	 }
 
-	public static function retrieve_ssa_details($ssa_id) {
+		return $file;
+	}
+
+	public static function retrieve_ssa_details($ssa_id)
+	{
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'ssa_appointments';
 
@@ -227,7 +228,6 @@ class Gf_Ics_Public {
 
 		return $ssa_details;
 	}
-
 }
 
 
