@@ -131,7 +131,10 @@ class Gf_Ics_Public {
 			if ($agent_number != '42215' || $agent_number != 42215 ) {
 				return $notification;
 			} else {
-				error_log(print_r($entry, true));
+				error_log($set_appointment);
+				error_log('Appointment details');
+				$details = self::retrieve_ssa_details($set_appointment);
+				error_log('Details: ' . print_r($details, true));
 			}
 		} else {
 			return $notification;
@@ -144,4 +147,106 @@ class Gf_Ics_Public {
 
 	}
 
+	public static function retrieve_ssa_details($ssa_id) {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'ssa_appointments';
+
+		$query = "SELECT * FROM $table_name WHERE id = $ssa_id";
+		$ssa_details = $wpdb->get_row($query, ARRAY_A);
+
+		return $ssa_details;
+	}
+
 }
+
+
+/* Gravity Forms Entry Object
+
+(
+    [id] => 38942
+    [status] => active
+    [form_id] => 14
+    [ip] => 73.53.174.43
+    [source_url] => https://thejohnson.group/agent-portal/agent/?agentid=42%2C215&rco=ap&eid=e3itn0uogjYxWOFJpZVmy7Kl52hJmoSED5bZFMHzj4HzHrLcEOes0OQxxNGJgFDw0HlEicB8DVFJN13CNWsmZsk6rsQnKEbE1G55kvvDiObwy229kw%3D%3D
+    [currency] => USD
+    [post_id] => 
+    [date_created] => 2022-11-08 20:03:29
+    [date_updated] => 2022-11-08 20:03:29
+    [is_starred] => 0
+    [is_read] => 0
+    [user_agent] => Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
+    [payment_status] => 
+    [payment_date] => 
+    [payment_amount] => 
+    [payment_method] => 
+    [transaction_id] => 
+    [is_fulfilled] => 
+    [created_by] => 2
+    [transaction_type] => 
+    [5] => 18701
+    [45] => 
+    [46] => 
+    [47] => 5721
+    [12] => 42215
+    [10.2] => 
+    [10.3] => Tyler
+    [10.4] => 
+    [10.6] => Karle
+    [10.8] => 
+    [1] => solo.driver.bob@gmail.com
+    [4.2] => 
+    [4.3] => tyler
+    [4.4] => 
+    [4.6] => karle
+    [4.8] => 
+    [11] => n
+    [6] => (904) 532-1080
+    [3] => admin@thejohnson.group
+    [33] => adb
+    [36] => n
+    [38] => n
+    [41] => n
+    [42] => 
+    [7.1] => 
+    [7.2] => 
+    [7.3] => 
+    [7.4] => 
+    [7.5] => 
+    [7.6] => 
+    [25] => 
+    [43] => 2
+    [34.1] => 
+    [23] => cal171ef
+    [26] => 2022-11-08
+    [32] => Tuesday
+    [31] => ap
+    [28] => (904) 532-1080
+    [21] => 12773
+    [15.2] => 
+    [15.3] => Carleus
+    [15.4] => 
+    [15.6] => Johnson
+    [15.8] => 
+    [16] => cjbenefits@gmail.com
+    [17] => (386) 868-9059
+    [22] => 
+    [18.2] => 
+    [18.3] => 
+    [18.4] => 
+    [18.6] => 
+    [18.8] => 
+    [19] => 
+    [20] => 
+    [44] => 
+    [24.2] => 
+    [24.3] => 
+    [24.4] => 
+    [24.6] => 
+    [24.8] => 
+    [37] => 
+    [40] => 
+    [8] => 
+    [49] => 
+)
+
+*/
