@@ -138,7 +138,7 @@ class Gf_Ics_Public {
 
 				if ($ics) {
 					$notification['attachments']   = rgar( $notification, 'attachments', array() );
-					$notification['attachments'][] = plugin_dir_path(__FILE__) . 'assets/clb.ics';
+					$notification['attachments'][] = plugin_dir_path(__FILE__) . 'assets/appointment.ics';
 				}
 				return $notification;
 			}
@@ -212,7 +212,7 @@ class Gf_Ics_Public {
 		$calendarComponent = $componentFactory->createCalendar($calendar);
   
 		// 4. Store file
-		$file = file_put_contents(plugin_dir_path(__FILE__) . 'assets/clb.ics', (string)$calendarComponent);
+		$file = file_put_contents(plugin_dir_path(__FILE__) . 'assets/appointment.ics', (string)$calendarComponent);
   
 		return $file;
 	 }
