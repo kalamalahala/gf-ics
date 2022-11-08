@@ -14,8 +14,10 @@ use Eluceo\iCal\Domain\Entity\Event;
 use Eluceo\iCal\Domain\Entity\TimeZone;
 use Eluceo\iCal\Domain\Entity\Attendee;
 use Eluceo\iCal\Domain\Enum\RoleType;
+use Eluceo\iCal\Domain\Enum\CalendarUserType;
 use Eluceo\iCal\Domain\Enum\ParticipationStatus;
-use Eluceo\iCal\Domain\ValueObject\Uri;
+// use Eluceo\iCal\Domain\ValueObject\Uri;
+// use Eluceo\iCal\Domain\ValueObject\Attachment;
 use Eluceo\iCal\Domain\ValueObject\DateTime;
 use Eluceo\iCal\Domain\ValueObject\TimeSpan;
 use Eluceo\iCal\Domain\ValueObject\Location;
@@ -146,6 +148,9 @@ class Gf_Ics_Public {
 	}
 
 	public static function generate_ics($appointment, $entry) {
+		$eventUid = 'thejohnson.group/event/' . $entry['id'];
+		$eventUniqueIdentifier = new UniqueIdentifier($eventUid);
+
 		$start_time = new DateTime(DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $appointment['start_date']), false);
 		$end_time = new DateTime(DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $appointment['end_date']), false);
 		$day = new TimeSpan($start_time, $end_time);
@@ -191,7 +196,7 @@ class Gf_Ics_Public {
 		$type = $appointment_type[$entry[33]];
   
   
-		$event = new Event();
+		$event = new Event($eventUniqueIdentifier);
 		$event->setOccurrence($day);
 		$event->setSummary('Appointment - The Johnson Group');
 		$event->setDescription($type . ' Appointment with ' . $agent_name . ' for ' . $attendee_name);
