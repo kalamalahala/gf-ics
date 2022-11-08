@@ -128,7 +128,7 @@ class Gf_Ics_Public {
 
 			$agent_number_field = 12;
 			$agent_number = $entry[$agent_number_field];
-			if ($agent_number != '42216' || $agent_number != 42216 ) {
+			if ($agent_number != '42215' || $agent_number != 42215 ) {
 				return $notification;
 			} else {
 				error_log($entry);
