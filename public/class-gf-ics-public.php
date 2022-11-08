@@ -119,9 +119,11 @@ class Gf_Ics_Public {
 	public function ics_notification($notification, $form, $entry) {
 
 		if ($notification['name'] == 'Send Appointment Details to Client') {
-			error_log('notification: ' . print_r($notification, true));
-			error_log('form: ' . print_r($form, true));
-			error_log('entry: ' . print_r($entry, true));
+			// error_log('notification: ' . print_r($notification, true));
+			// error_log('form: ' . print_r($form, true));
+			// error_log('entry: ' . print_r($entry, true));
+
+			error_log('symlink established');
 		}
 
 		$data = [];
