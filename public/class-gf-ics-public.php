@@ -130,22 +130,87 @@ class Gf_Ics_Public {
 			$agent_number = $entry[$agent_number_field];
 			if ($agent_number != '42215' || $agent_number != 42215 ) {
 				return $notification;
-			} else {
-				error_log($set_appointment);
-				error_log('Appointment details');
-				$details = self::retrieve_ssa_details($set_appointment);
-				error_log('Details: ' . print_r($details, true));
+			} else { // begin ICS construction here
+				$details = self::retrieve_ssa_details($set_appointment); // Appointment details: key start_date, end_date
+				$ics = self::generate_ics($details, $entry); // ICS file
+
+				if ($ics) {
+					$notification['attachments']   = rgar( $notification, 'attachments', array() );
+					$notification['attachments'][] = plugin_dir_path(__FILE__) . 'assets/clb.ics';
+				}
+				return $notification;
 			}
 		} else {
 			return $notification;
 		}
 	}
 
-	public static function generate_ics($data) {
+	public static function generate_ics($appointment, $entry) {
+		$start_time = new DateTime($appointment['start_date'], false);
+		$end_time = new DateTime($appointment['end_date'], false);
+		$day = new TimeSpan($start_time, $end_time);
+		$location = new Location('Zoom Webinar');
+		
+  		// Organizer
+		$organizer = new Organizer(
+		   new EmailAddress('info@thejohnson.group', 'The Johnson Group')
+		);
 
-		error_log('function called');
+		// Agent
+		$agent_name = $entry[10.3] . ' ' . $entry[10.6];
+		$agent_email = $entry[1];
+		$agent = new Attendee(
+			new EmailAddress($agent_email, $agent_name),
+		);
+		$agent->setRole(RoleType::REQ_PARTICIPANT());
+		$agent->setParticipationStatus(ParticipationStatus::ACCEPTED());
+		$agent->setDisplayName($agent_name);
+		$agent->setLanguage('en-US');
+  
+		// Attendee
+		$attendee_name = $entry[4.3] . ' ' . $entry[4.6];
+		$attendee = new Attendee(
+		   new EmailAddress($entry[3], $attendee_name)
+		);
+		$attendee->setCalendarUserType(CalendarUserType::INDIVIDUAL());
+		$attendee->setParticipationStatus(ParticipationStatus::NEEDS_ACTION());
+		$attendee->setRole(RoleType::REQ_PARTICIPANT());
+		$attendee->setResponseNeededFromAttendee(true);
+		$attendee->addSentBy(new EmailAddress($agent_email, $agent_name));
+		$attendee->setDisplayName($attendee_name);
+		$attendee->setLanguage('en-US');
+  
+		$appointment_type = array(
+			'pos' => 'Policy Owner Service',
+			'adb' => 'Accidental Death Benefit',
+			'csk' => 'Child Safe Kit',
+			'p750k' => 'P750K',
+			'ref' => 'Referral',
+		);
 
-	}
+		$type = $appointment_type[$entry[33]];
+  
+  
+		$event = new Event();
+		$event->setOccurrence($day);
+		$event->setSummary('Appointment - The Johnson Group');
+		$event->setDescription($type . ' Appointment with ' . $agent_name . ' for ' . $attendee_name);
+		$event->setOrganizer($organizer);
+		$event->addAttendee($attendee);
+		$event->addAttendee($agent);
+		$event->setLocation($location);
+  
+		$calendar = new Eluceo\iCal\Domain\Entity\Calendar([$event]);
+  
+		// 3. Transform domain entity into an iCalendar component
+		$componentFactory = new Eluceo\iCal\Presentation\Factory\CalendarFactory();
+		$calendarComponent = $componentFactory->createCalendar($calendar);
+  
+		// 4. Store file
+		$file = file_put_contents(plugin_dir_path(__FILE__) . 'assets/clb.ics', (string)$calendarComponent);
+  
+		return $file;
+	 }
 
 	public static function retrieve_ssa_details($ssa_id) {
 		global $wpdb;
@@ -160,7 +225,7 @@ class Gf_Ics_Public {
 }
 
 
-/* Gravity Forms Entry Object
+/* Gravity Forms Entry Array
 
 (
     [id] => 38942
@@ -248,5 +313,38 @@ class Gf_Ics_Public {
     [8] => 
     [49] => 
 )
+*/
 
+/* 
+SSA Appointment Array
+(
+    [id] => 18703
+    [appointment_type_id] => 6
+    [rescheduled_from_appointment_id] => 0
+    [group_id] => 0
+    [author_id] => 2
+    [customer_id] => 0
+    [customer_information] => {"Name":"anotha one client","Email":"tyler.karle@icloud.com","Please Enter Your Agent Number":"42215","Agent Name":"Tyler Karle","Agent Email":"solo.driver.bob@gmail.com","Is the Client married?":"No","Client Phone Number":"(904) 532-1080","Appointment Type":"Child Safe","Does the client have a bank account?":"No","Does the client have children?":"No","Is the client gainfully employed?":"No"}
+    [customer_timezone] => America/New_York
+    [customer_locale] => en_US
+    [start_date] => 2022-11-08 20:30:00
+    [end_date] => 2022-11-08 21:00:00
+    [title] => 
+    [description] => 
+    [price_full] => 0.00
+    [payment_method] => 
+    [payment_received] => 0.00
+    [mailchimp_list_id] => 
+    [google_calendar_id] => 
+    [google_calendar_event_id] => 
+    [web_meeting_url] => 
+    [allow_sms] => 
+    [status] => booked
+    [date_created] => 2022-11-08 20:13:44
+    [date_modified] => 2022-11-08 20:14:05
+    [rescheduled_to_appointment_id] => 0
+    [web_meeting_password] => 
+    [web_meeting_id] => 
+    [expiration_date] => 0000-00-00 00:00:00
+)
 */
