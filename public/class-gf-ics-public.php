@@ -123,13 +123,19 @@ class Gf_Ics_Public {
 			// error_log('form: ' . print_r($form, true));
 			// error_log('entry: ' . print_r($entry, true));
 
-			error_log('symlink established');
+			$set_appointment_field = 5;
+			$set_appointment = $entry[$set_appointment_field];
+
+			$agent_number_field = 12;
+			$agent_number = $entry[$agent_number_field];
+			if ($agent_number != '42216' || $agent_number != 42216 ) {
+				return $notification;
+			} else {
+				error_log($entry);
+			}
+		} else {
+			return $notification;
 		}
-
-		$data = [];
-		self::generate_ics($data);
-
-		return $notification;
 	}
 
 	public static function generate_ics($data) {
