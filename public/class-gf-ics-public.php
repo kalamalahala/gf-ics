@@ -146,8 +146,8 @@ class Gf_Ics_Public {
 	}
 
 	public static function generate_ics($appointment, $entry) {
-		$start_time = new DateTime($appointment['start_date'], false);
-		$end_time = new DateTime($appointment['end_date'], false);
+		$start_time = new DateTime(DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $appointment['start_date']), false);
+		$end_time = new DateTime(DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $appointment['end_date']), false);
 		$day = new TimeSpan($start_time, $end_time);
 		$location = new Location('Zoom Webinar');
 		
