@@ -151,8 +151,8 @@ class Gf_Ics_Public {
 		$eventUid = 'thejohnson.group/event/' . $entry['id'];
 		$eventUniqueIdentifier = new UniqueIdentifier($eventUid);
 
-		$start_time = new DateTime(DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $appointment['start_date']), false);
-		$end_time = new DateTime(DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $appointment['end_date']), false);
+		$start_time = new DateTime(DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $appointment['start_date']), true);
+		$end_time = new DateTime(DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $appointment['end_date']), true);
 		$day = new TimeSpan($start_time, $end_time);
 		$location = new Location('Zoom Webinar');
 		
@@ -194,12 +194,13 @@ class Gf_Ics_Public {
 		);
 
 		$type = $appointment_type[$entry[33]];
+		$description = $type . ' Appointment with ' . $attendee_name . ' and ' . $agent_name;
   
   
 		$event = new Event($eventUniqueIdentifier);
 		$event->setOccurrence($day);
 		$event->setSummary('Appointment - The Johnson Group');
-		$event->setDescription($type . ' Appointment with ' . $agent_name . ' for ' . $attendee_name);
+		$event->setDescription($description);
 		$event->setOrganizer($organizer);
 		$event->addAttendee($attendee);
 		$event->addAttendee($agent);
